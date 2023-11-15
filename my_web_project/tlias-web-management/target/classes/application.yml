@@ -1,0 +1,44 @@
+##congig tomcat server
+#server:
+#  port: 8080
+#
+##define map/object collection
+#user:
+#  name: Tom
+#  age: 20
+#  address: bejing
+#
+##define list/set collection
+#hobby:
+#  - java
+#  - C
+#  - game
+#  - sport
+
+#database connection message
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tlias
+    username: root
+    password: 1234
+#    file upload configure
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+#mybatis configure
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+#aliyun configure
+#aliyun:
+#  oss:
+#    endpoint:
+#    accessKeyId:
+#    accessKeySecret:
+#    bucketName:
+

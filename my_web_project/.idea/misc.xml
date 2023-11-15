@@ -4,15 +4,13 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/maven-project01/pom.xml" />
-        <option value="$PROJECT_DIR$/springboot-web-quickstart/pom.xml" />
+        <option value="$PROJECT_DIR$/tlias-web-management/pom.xml" />
         <option value="$PROJECT_DIR$/springboot-web-req-resp/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
-        <option value="$PROJECT_DIR$/maven-project01/pom.xml" />
-        <option value="$PROJECT_DIR$/springboot-web-quickstart/pom.xml" />
+        <option value="$PROJECT_DIR$/springboot-web-req-resp/pom.xml" />
       </set>
     </option>
   </component>
