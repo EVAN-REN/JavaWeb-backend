@@ -161,3 +161,75 @@ xml配置方式：
 第三部分：signature，防止token被篡改、确保安全性。将header、payload，并加入指定密钥，通过指定签名算法计算而来
 登陆成功之后，生成令牌，后续每个请求需要携带jwt令牌，系统在每次请求处理之前，先校验令牌，通过后，再处理
 需要依赖 jjwt
+
+Filter过滤器，是JavaWeb三大组件(Servlet,Filter,Listener)之一
+过滤器可以把对资源的请求拦截下来，从而实现一些特殊的功能
+过滤器一般完成一些通用的操作，比如：登陆校验、统一编码处理、敏感字符处理等
+步骤
+1:定义Filter：定义一个类，实现Filter接口，并重写其所有方法
+2:配置Filter：Filter类上加@WebFilter注解，通过拦截资源的路径。引导类上加@ServletComponentScan开启组建支持
+拦截路径：/login 、 /depts/* 、 /*
+过滤器链：一个web应用中，可以配置多个过滤器，这就形成了一个过滤器链
+顺序：注解配置的Filter，优先级是按照过滤器类名（字符串）的自然排序
+
+拦截器interceptor
+是一种动态拦截方法调用的机制，类似于过滤器。spring框架中提供的，用来动态拦截控制器方法的执行
+拦截请求，在指定的方法调用前后，根据业务需要执行预先设定的代码
+步骤：
+1 定义拦截器，实现HandlerInterceptor接口，并重写其所有方法，加上@Component交给ioc容器管理
+2 创建一个配置类（加上@Configuration）继承WebMvcConfigurer，注册拦截器（创建一个拦截器类，加上@Autowired），通过addInterceptor添加
+在后面通过加上addPathPatterns来表示需要拦截哪些资源，excludePathPatterns不需要添加哪些资源
+拦截路径：/* 一级路径、/** 任意级路径, /depts/*, /depts/**
+执行流程：浏览器 -> (JavaWeb)Filter -> (spring)DispatcherServlet -> Interceptor -> Controller
+
+Filter与Interceptor区别
+接口规范不同：过滤取需要实现filter接口，拦截器需要实现handlerinterceptor接口
+拦截范围不同：过滤取filter会拦截所有资源，而interceptor只会拦截spring环境中的资源
+
+异常处理
+方案一：在每一个controller的方法中进行try/catch处理
+方法二：全剧异常处理器（推荐）
+步骤：
+创建异常处理类，加上@RestControllerAdvice(@ControllerAdvice+@ResponseBody)，方法上加上@ExceptionHandler(异常类型)
+
+事务管理
+事务是一组操作的集合，他是一个不可分割的工作单位，这些操作要么同时成功，要么同时失败
+开启事务（一组操作开始前，开启事务）：start transaction / begin ;
+提交事务（这组操作全部成功后，提交事务）：commit ;
+回滚事务（中间任何一个操作出现异常，回滚事务）：rollback ;
+
+Spring事务管理
+注解：@Transactional
+位置：业务（service）层的方法上、类上、接口上
+作用：将当前方法教给spring进行事务管理，方法执行前，开启事物；成功执行完毕，提交事务；出现异常，回滚事务
+事务属性：
+回滚（rollbackFor）：默认情况下，只有出现RuntimeException才回滚异常。rollbackFor属性用于控制出现何种异常类型，回滚事务
+传播行为（propagation）：指的就是当一个事务方法被另一个事务方法调用时，这个事务方法应该如何进行事务控制
+REQUIRED  默认，需要事务，有则加入，无则创建新事务
+REQUIRES_NEW  需要新事务，无论有无，总是创建新事务
+SUPPORTS  支持事务，有则加入，无则在无事务状态中运行
+NOT_SUPPORTED  不支持事务，在无事务状态下运行，如果当前存在已有事务，则挂起当前事务
+MANDATORY  必须有事务，否则泡异常
+NEVER  必须无事务，否则抛异常
+
+AOP: Aspect Oriented Programming(面向切面编程、面向方面编程)，其实就是面向特定方法编程
+动态代理是面向切面编程最主流的实现。而SpringAOP是Spring框架的高级技术，旨在管理bean对象的过程中，主要通过底层动态代理机制，对特定的方法进行编程
+使用场景：记录操作日志/权限控制/事务管理
+优点：代码无侵入/减少重复代码/提高开发效率/维护方便
+步骤：
+导入依赖：在pom.xml中导入AOP的依赖
+编写AOP程序：针对于特定方法根据业务需要进行编程
+在AOP类上加注解@Aspect
+在AOP类中的方法上加上注解@Around()来表明哪些方法使用AOP
+AOP核心概念：
+链接点：JoinPoint，可以被AOP控制的方法（暗含方法执行时的相关信息）
+通知：Advice，指那些重复的逻辑（比如查询方法执行时间），也就是共性功能（最终体现为一个方法）
+切入点：PointCut，匹配连接点的条件，通知仅会在切入点方法执行时被应用
+切面：Aspect，描述通知和切入点的对应关系（通知+切入点），切入点+通知=切面
+执行流程：
+程序进入controller层，aop会将controller层中的初始化的service层对象变为代理对象（代理对象就是对目标对象增强后的对象）
+在代理对象中存在目标对象以及通知方法，所以程序会进入aop类中的方法执行
+当执行到aop类方法中的原始方法时，会跳转到目标对象中的方法
+当原始方法运行完成，程序会回到aop类中的方法执行
+完成后回到controller层返回结果
+
