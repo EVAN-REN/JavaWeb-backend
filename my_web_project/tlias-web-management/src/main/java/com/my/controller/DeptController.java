@@ -1,5 +1,6 @@
 package com.my.controller;
 
+import com.my.anno.Log;
 import com.my.pojo.Dept;
 import com.my.pojo.Result;
 import com.my.service.DeptService;
@@ -36,6 +37,7 @@ public class DeptController {
     }
 
 //    delete department
+    @Log
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id){
         log.info("delete department by id:{}", id);
@@ -44,6 +46,7 @@ public class DeptController {
     }
 
 //    add department
+    @Log
     @PostMapping
     public Result add(@RequestBody Dept dept){
         log.info("add department:{}", dept);

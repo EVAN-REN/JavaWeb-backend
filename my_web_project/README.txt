@@ -37,6 +37,25 @@ Bean对象：IOC容器中创建、管理的对象
 @SpringBootApplication 会扫描当前目录下包和他们的子包来找到这些注解
 对于其他目录下的包，可以通过 @ComponentScan 来指定扫描
 
+默认情况下，spring项目启动时，会把bean都创建好放在ioc容器中，如果想要主动获取这些bean，可以通过如下方式：
+根据name获取bean：Object getBean(String name)
+根据类型获取bean：<T> T getBean(Class<T> requiredType)
+根据name获取bean（带类型转换）：<T> T getBean(String name, Class<T> requiredType)
+
+spring支持五种作用域，后三种在web环境中生效：
+singleton:容器内同名称的bean只有一个实例（单例，默认）
+prototype:每次使用该bean时会创建新的实例（非单例）
+request:每个请求范围内会创建新的实例
+session:每个会话范围内会创建新的实例
+application:每个应用范围内会创建新的实例
+
+第三方bean：
+如果要管理的bean对象来自第三方（无法修改，不是自定义），是无法用@Component及衍生注解声明bean的，就需要用到@Bean注解
+若要管理第三方bean对象，建议对这些bean进行集中分类配置，可以通过@Configuration注解声明一个配置类
+通过@Bean注解的name或value属性可以声明bean的名称，如果不指定，默认bean的名称就是方法名
+如果第三方bean需要依赖其他bean对象，直接在bean定义方法中设置形参即可，容器会根据类型自动装配
+总结：项目中自定义的类，使用@Component及衍生注解；项目中引入第三方的，使用@Bean注解
+
 MyBatis是一款优秀的持久层（dao）框架，用与简化JDBC的开发
 1.准备工作（创建springboot工程、数据库表user、实体类User）
 2.引入mybatis的相关依赖，配置mybatis（数据库连接信息，在resources下的properties中）
@@ -126,6 +145,7 @@ aliyun.oss.endpoint=https://oss-cn-hangzhou.aliyuncs.com
 @Value只能一个一个进行外部属性的注入， @ConfigurationProperties可以批量注入到bean对象属性中
 
 yaml/yml(application.yaml/application.yml)配置文件(不同于application.properties)
+这三种配置方式优先级从高到低：program arguments(命令行参数,--xxx=xxx),VM options(java系统属性,-Dxxx=xxx),properties,yml(主流),yaml
 properties配置方式(无层级)：key=value
 server.port=8080
 server.address=127.0.0.1
@@ -188,7 +208,7 @@ Filter与Interceptor区别
 
 异常处理
 方案一：在每一个controller的方法中进行try/catch处理
-方法二：全剧异常处理器（推荐）
+方法二：全局异常处理器（推荐）
 步骤：
 创建异常处理类，加上@RestControllerAdvice(@ControllerAdvice+@ResponseBody)，方法上加上@ExceptionHandler(异常类型)
 
@@ -201,7 +221,7 @@ Filter与Interceptor区别
 Spring事务管理
 注解：@Transactional
 位置：业务（service）层的方法上、类上、接口上
-作用：将当前方法教给spring进行事务管理，方法执行前，开启事物；成功执行完毕，提交事务；出现异常，回滚事务
+作用：将当前方法交给spring进行事务管理，方法执行前，开启事物；成功执行完毕，提交事务；出现异常，回滚事务
 事务属性：
 回滚（rollbackFor）：默认情况下，只有出现RuntimeException才回滚异常。rollbackFor属性用于控制出现何种异常类型，回滚事务
 传播行为（propagation）：指的就是当一个事务方法被另一个事务方法调用时，这个事务方法应该如何进行事务控制
@@ -213,6 +233,7 @@ MANDATORY  必须有事务，否则泡异常
 NEVER  必须无事务，否则抛异常
 
 AOP: Aspect Oriented Programming(面向切面编程、面向方面编程)，其实就是面向特定方法编程
+一句话总结aop：将与核心业务无关的代码独立的抽取出来，形成一个独立的组件，然后以横向交叉的方式应用到业务流程当中的过程
 动态代理是面向切面编程最主流的实现。而SpringAOP是Spring框架的高级技术，旨在管理bean对象的过程中，主要通过底层动态代理机制，对特定的方法进行编程
 使用场景：记录操作日志/权限控制/事务管理
 优点：代码无侵入/减少重复代码/提高开发效率/维护方便
@@ -221,6 +242,7 @@ AOP: Aspect Oriented Programming(面向切面编程、面向方面编程)，其�
 编写AOP程序：针对于特定方法根据业务需要进行编程
 在AOP类上加注解@Aspect
 在AOP类中的方法上加上注解@Around()来表明哪些方法使用AOP
+
 AOP核心概念：
 链接点：JoinPoint，可以被AOP控制的方法（暗含方法执行时的相关信息）
 通知：Advice，指那些重复的逻辑（比如查询方法执行时间），也就是共性功能（最终体现为一个方法）
@@ -233,3 +255,60 @@ AOP核心概念：
 当原始方法运行完成，程序会回到aop类中的方法执行
 完成后回到controller层返回结果
 
+通知类型：
+@Around:环绕通知，此注解标注的通知方法在目标方法前、后都被执行(注意：需要自己调用ProceedingJoinPoint.proceed()来让原始方法执行，其他通知不考虑；此通知方法返回值必须指定为object，来接收原始方法的返回值)
+@Before:前置通知，此注解标注的通知方法在目标方法前被执行
+@After:后置通知，此注解标注的通知方法在目标方法后被执行，无论是否有异常都会执行
+@AfterReturning:返回后通知，此注解标注的通知方法在目标方法后被执行，有异常不会执行
+@AfterThrowing:异常后通知，此注解标注的通知方法发生异常后执行
+@PointCut:可以将公共的切点表达式抽取出来，需要用到时引用该切点表达式即可（注意如果其他类要调用方法，pointcut所注释的方法在其本身类中应该是public）
+
+通知顺序：
+默认是类名越靠前before越先执行，after越后执行
+可以加入@Order(数字)里面数字越小before越先执行，after越后执行
+
+切入点表达式：
+1. execution(访问修饰符 返回值 包名.类名.方法名(方法参数) throws 异常)
+访问修饰符、包名.类名、throws异常都可以省略
+*:单个独立的任意符号，可以是通配任意返回值、包名、类名、方法名、任意类型一个参数，或是他们其中的一部分
+..:多个连续的任意符号，可以是任意层级的包、任意类型个数的参数
+2. @annotation()用于匹配标识有特定注解的方法
+先自己创建一个自定义注解类，在方法上加上自定义注解，用@annotation()在aop类中声明在自定义注解上生效
+
+连接点：在Spring中用JoinPoint抽象了连接点，用它可以获得方法执行时的相关信息，如目标类名、方法名、方法参数等
+@Around通知中，获取连接点信息只能用ProceedingJoinPoint
+对于其他四种通知，获取连接点信息只能用JointPoint，他是ProceedingJoinPoint的父类型
+
+springboot原理：（起步依赖，自动配置）
+起步依赖：利用springboot的依赖传递
+自动配置：springboot在spring容器启动后，一些配置类、bean对象就自动存入到ioc容器中，不需要我们手动去声明，从而简化了开发，省去了繁琐的配置操作
+方案一：通过@ComponentScan组建扫描来获取第三方的包
+方案二：通过@Import导入，使用@Import导入的类会被spring加载到ioc容器中，可以导入普通类/配置类/ImportSelector接口实现类，或者使用第三方包的@EnableXxxx注解，封装了@Import注解
+
+对于spring启动注解 @SpringBootApplication：
+该注解标识在SpringBoot工程引导类上，是SpringBoot中最最最重要的注解，该注解由三个部分组成：
+@SpringBootConfiguration:该注解与@Configuration注解作用相同，用来声明当前也是一个配置类
+@ComponentScan:组建扫描，默认扫描当前引导类所在包及其子包
+@EnableAutoConfiguration:SpringBoot实现自动化配置的核心注解，里面有一个@Import，里面是AutoConfigurationImportSelector类型
+此类中有一个方法是selectImports会获取maven管理的spring-boot-autoconfigure中META-INF中spring里文件，里面是所有自动配置的类名
+
+@Conditional:（当上面spring启动自动加载类到bean时，会根据以下注解来选择是否加入）
+作用：按照一定的条件进行判断，在满足给定条件后才会注册对应的bean对象到Spring IOC容器中
+位置：方法、类
+@Conditional本身是一个父注解，派生出大量的子注解：
+@ConditionalOnClass:判断环境中是否有对应字节码文件，才注册bean到ioc容器
+@ConditionalOnMissingBean:判断环境中没有对应的bean（类型或名称），才注册bean到ioc容器
+@ConditionalOnProperty:判断配置文件中有对应属性和值，才注册bean到ioc容器
+
+自定义starter（例如自定义aliyun-oss-spring-boot-starter，完成阿里云oss操作工具类AliyunOSSUtils的自动配置）
+1.创建aliyun-oss-spring-boot-starter模块
+2.创建aliyun-oss-spring-boot-autoconfigure模块，在starter中引入该模块
+3.在aliyun-oss-spring-boot-autoconfigure模块中的定义自动装配功能，并定义自动配置文件META-INF/spring/xxx.imports
+
+总结：
+解决方案：阿里云oss，JWT
+javaweb：过滤器，cookie、session
+springboot
+spring framework：IOC，DI，AOP，事务管理
+springmvc：拦截器，全剧异常处理，接受请求，响应数据
+mybaits

@@ -1,5 +1,6 @@
 package com.my.controller;
 
+import com.my.anno.Log;
 import com.my.pojo.Emp;
 import com.my.pojo.PageBean;
 import com.my.pojo.Result;
@@ -39,6 +40,7 @@ public class EmpController {
     /**
      * delete in batches
      */
+    @Log
     @DeleteMapping("/{ids}")
     public Result delete(@PathVariable List<Integer> ids){
         log.info("delete in batches, ids:{}", ids);
@@ -50,6 +52,7 @@ public class EmpController {
      * add a new employee
      * @return
      */
+    @Log
     @PostMapping
     public Result save(@RequestBody Emp emp){
         log.info("add a new employee:{}", emp);
@@ -72,6 +75,7 @@ public class EmpController {
      * update employee
      * @return
      */
+    @Log
     @PutMapping
     public Result update(@RequestBody Emp emp){
         log.info("update employee: {}", emp);

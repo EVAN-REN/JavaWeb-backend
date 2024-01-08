@@ -7,22 +7,29 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="springboot-aop-quickstart" />
+        <module name="aliyun-oss-spring-boot-starter" />
+        <module name="tlias-web-management" />
+        <module name="aliyun-oss-spring-boot-autoconfigure" />
+        <module name="springboot-web-config2" />
+        <module name="itheima-utils" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">
+      <module name="springboot-aop-quickstart" target="1.8" />
       <module name="springboot-mybatis-crud" target="11" />
       <module name="springboot-mybatis-quickstart" target="11" />
       <module name="springboot-web-quickstart" target="11" />
       <module name="springboot-web-req-resp" target="11" />
-      <module name="tlias-web-management" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="aliyun-oss-spring-boot-autoconfigure" options="-parameters" />
+      <module name="aliyun-oss-spring-boot-starter" options="-parameters" />
       <module name="springboot-aop-quickstart" options="-parameters" />
       <module name="springboot-mybatis-crud" options="-parameters" />
       <module name="springboot-mybatis-quickstart" options="-parameters" />
+      <module name="springboot-web-config2" options="-parameters" />
       <module name="springboot-web-req-resp" options="-parameters" />
       <module name="tlias-web-management" options="-parameters" />
     </option>
